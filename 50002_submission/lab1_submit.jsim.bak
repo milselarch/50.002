@@ -1,0 +1,23 @@
+.include "nominal.jsim"
+.include "lab1checkoff.jsim"
+
+* 2-input nor: inputs are a and b, output is z
+.subckt nor2 a b z
+MPD1 z a 0 0 NENH sw=8 sl=1
+MPD2 z b 0 0 NENH sw=8 sl=1
+MPU1 z a 1 vdd PENH sw=9 sl=1
+MPU2 1 b vdd vdd PENH sw=9 sl=1
+.ends
+
+.subckt F A B C Z
+MPP11 1 a vdd vdd PENH sw=8 sl=1
+MPP12 z 3 1 vdd PENH sw=8 sl=1
+MPN13 z a 4 0 NENH sw=8 sl=1
+MPN14 4 b 0 0 NENH sw=8 sl=1
+MPP15 1 b vdd vdd PENH sw=8 sl=1
+MPN16 z 3 0 0 NENH sw=8 sl=1
+X1 a b z nor2
+
+
+*END ANSWER
+.ends

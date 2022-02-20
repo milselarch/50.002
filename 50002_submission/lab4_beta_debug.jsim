@@ -1,0 +1,40 @@
+.include "nominal.jsim"
+.include "stdcell.jsim"
+.include "lab4_control_debug.jsim"
+.include "lab4_pc_debug.jsim"
+.include "lab4_refile_debug.jsim"
+.include "lab4_aluwdsel.jsim"
+.include "lab4_adder.jsim"
+.include "lab4_alu.jsim"
+.include "lab4checkoff_debug.jsim"
+
+
+.subckt beta clk reset irq ia[31:0] id[31:0] ma[31:0] moe mrd[31:0] wr mwd[31:0] PCSEL[2:0] PC_4[31:0]
++ pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_4_SXTC[31:0] BRANCH_CHECK z ra[31:0] WERF WDSEL_OUT[31:0] WA[4:0]
+
+* BEGIN ANSWER
+* initialise pc unit circuit
+
+* clk reset id[15:0] PCSEL[2:0] ra[31:0] ia[31:0] PC_4_SXTC[31:0] PC_4[31:0]
+XPC_UNIT clk reset id[15:0] PCSEL[2:0] ra[31:0] ia[31:0] PC_4_SXTC[31:0] PC_4[31:0] pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_UNIT
+
+* initialise regfile unit circuit
+
+* .subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z 
+XREGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z WA[4:0] REGFILE_UNIT
+
+* initialise control unit circuit
+
+* .subckt CONTROL_UNIT z reset irq ia31 id[31:26] asel bsel ra2sel alufn[5:0] moe wdsel[1:0] wasel werf wr pcsel[2:0] BRANCH_CHECK
+XCONTROL_UNIT z reset irq ia31 id[31:26] asel bsel ra2sel alufn[5:0] moe wdsel[1:0] wasel werf wr pcsel[2:0] BRANCH_CHECK CONTROL_UNIT
+
+* initialise alu+wdsel unit circuit
+
+* .subckt ALUWDSEL_UNIT ia31 id[15:0] ra[31:0] rb[31:0] PC_4[31:0] PC_4_SXTC[31:0] ASEL BSEL ALUFN[5:0] WDSEL[1:0] mrd[31:0] ma[31:0] WDSEL_OUT[31:0]
+XALUWDSEL_UNIT ia31 id[15:0] ra[31:0] rb[31:0] PC_4[31:0] PC_4_SXTC[31:0] ASEL BSEL ALUFN[5:0] WDSEL[1:0] mrd[31:0] ma[31:0] WDSEL_OUT[31:0] ALUWDSEL_UNIT
+
+* END ANSWER
+.ends
+
+
+

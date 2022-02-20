@@ -1,0 +1,102 @@
+* .include "nominal.jsim"
+* .include "stdcell.jsim"
+* .include "lab4_adder.jsim"
+* .include "lab4_testpc_debug.jsim"
+
+.subckt PC_UNIT clk reset id[15:0] PCSEL[2:0] ra[31:0] ia[31:0] PC_4_SXTC[31:0] PC_4[31:0] pc_out1[31:0] pc_out2[31:0] reset_signal[31:0]
+
+* constant XAddr 0x80000008
+XAddr1 vdd#2 XAddr31 XAddr3 bus
+XAddr2 0#30 XAddr[30:4] XAddr[2:0] bus
+
+* constant ILLOP 0x80000004
+XILLOP1 vdd#2 ILLOP31 ILLOP2 bus
+XILLOP2 0#30 ILLOP[30:3] ILLOP[1:0] bus
+
+* constant 4
+XFour1 vdd FOUR2 bus
+XFour2 0#31 FOUR[31:3] FOUR[1:0] bus
+
+* constant RESET 0x80000000
+Xreset1 vdd RESETAddr31 bus
+Xreset2 0#31 RESETAddr[30:0] bus
+
+***** JMP mux *************
+* BEGIN ANSWER
+
+XJMPMUX ia31 0 ra31 jmp_ra31 mux2
+
+* END ANSWER
+****************************
+
+**** 5-to-1 PCSEL mux *****
+* BEGIN ANSWER
+
+* declare pcsel mux 1 input 0
+XBUS0P1 selbus0[31] ia31 bus
+XBUS0P2 selbus0[30:2] PC_4[30:2] bus
+XBUS0P3 selbus0[1:0] 0#2 bus
+* declare pcsel mux 1 input 1
+XBUS1P0 selbus1[31] ia31 bus
+XBUS1P1 selbus1[30:2] PC_4_SXTC[30:2] bus
+XBUS1P2 selbus1[1:0] 0#2 bus
+* declare pcsel mux 1 input 2
+XBUS2P1 selbus2[31] jmp_ra31 bus
+XBUS2P2 selbus2[30:2] ra[30:2] bus
+XBUS2P3 selbus2[1:0] 0#2 bus
+* declare pcsel mux 1 input 3
+XBUS3P1 selbus3[31:0] ILLOP[31:0] bus
+
+* careful about the mux4 selector bits now, its flipped relative to the diagram
+XSELMUX1 PCSEL[0]#32 PCSEL[1]#32 selbus0[31:0] selbus1[31:0] selbus2[31:0] selbus3[31:0] pc_out1[31:0] mux4
+* fselout is the output of the big pcsel mux
+XSELMUX2 PCSEL2#32 pc_out1[31:0] XAddr[31:0] pc_out2[31:0] mux2
+
+* END ANSWER
+****************************
+
+
+**** RESET mux *************
+* BEGIN ANSWER
+
+XRMUX reset#32 pc_out2[31:0] RESETAddr[31:0] reset_signal[31:0] mux2
+
+* END ANSWER
+****************************
+
+**** PC Register ***********
+* BEGIN ANSWER
+
+* register netlist = Xid d clk q dreg
+XPC_REG reset_signal[31:0] clk#32 ia[31:0] dreg
+
+* END ANSWER
+****************************
+
+
+**** add-4 unit ************ 
+Xincrement4 ia[31:0] FOUR[31:0] increment_4[31:0] adder32
+* set supervisor bit to be equal to ia31
+XPC41 ia31 PC_4[31] bus 
+XPC42 increment_4[30:2] PC_4[30:2] bus 
+* set lower to bits to 0b00
+XPC43 0#2 PC_4[1:0] bus 
+****************************
+
+
+**** shift add unit ********
+* BEGIN ANSWER
+
+XEXTEND1 0#2 extended_id[1:0] bus
+XEXTEND2 id[15:0] extended_id[17:2] bus
+XEXTEND3 id15#14 extended_id[31:18] bus
+
+XPCSADD extended_id[31:0] PC_4[31:0] sxtc_add_out[31:0] adder32
+XSXTC1 PC_4_SXTC[31] ia31 bus
+XSXTC2 PC_4_SXTC[30:2] sxtc_add_out[30:2] bus
+XSXTC3 PC_4_SXTC[1:0] 0#2 bus
+
+* END ANSWER
+****************************
+
+.ends

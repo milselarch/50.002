@@ -1,0 +1,107 @@
+.include "lab2checkoff.jsim"
+.include "nominal.jsim"
+
+* 2-input nand: inputs are a and b, output is z
+.subckt nand2 a b z
+MPD1 z a 1 0 NENH sw=8 sl=1
+MPD2 1 b 0 0 NENH sw=8 sl=1
+MPU1 z a vdd vdd PENH sw=9 sl=1
+MPU2 z b vdd vdd PENH sw=9 sl=1
+.ends
+
+* inverter: input is a, output is z
+.subckt inv a z
+MPD1 z a 0 0 NENH sw=16 sl=1
+MPU1 z a vdd vdd PENH sw=16 sl=1
+.ends
+
+* 2-input nor: inputs are a and b, output is z
+.subckt nor2 a b z
+MPD1 z a 0 0 NENH sw=8 sl=1
+MPD2 z b 0 0 NENH sw=8 sl=1
+MPU1 z a 1 vdd PENH sw=9 sl=1
+MPU2 1 b vdd vdd PENH sw=9 sl=1
+.ends
+
+* 2-input xor: input is a and b, output is z
+.subckt xor2 a b z
+* Build your own xor gate here
+* BEGIN ANSWER
+MPP11 1 a vdd vdd PENH sw=4 sl=1
+MPP12 z 3 1 vdd PENH sw=4 sl=1
+MPN13 z a 4 0 NENH sw=2 sl=1
+MPN14 4 b 0 0 NENH sw=2 sl=1
+MPP15 1 b vdd vdd PENH sw=4 sl=1
+MPN16 z 3 0 0 NENH sw=2 sl=1
+X1 a b 3 nor2
+*END ANSWER
+.ends
+
+* 2-input xnor: input is a and b, output is z
+.subckt xnor2 a b z
+* Build your own xnor gate here
+* BEGIN ANSWER
+MPP11 z 1 vdd vdd PENH sw=4 sl=1
+MPN12 z 1 2 0 NENH sw=2 sl=1
+MPN13 2 b 0 0 NENH sw=2 sl=1
+MPP14 3 b vdd vdd PENH sw=4 sl=1
+MPP15 z a 3 vdd PENH sw=4 sl=1
+MPN16 2 a 0 0 NENH sw=2 sl=1
+X1 a b 1 nand2
+*END ANSWER
+.ends
+
+* 2-input and: inputs are a and b, output is z
+.subckt and2 a b z
+X1 a b 1 nand2
+X2 1 z inv
+.ends
+
+* 2-input or: inputs are a and b, output is z
+.subckt or2 a b z
+X1 a b 1 nor2
+X2 1 z inv
+.ends
+
+* FA: 1-bit Full Adder circuit
+* Input: a, b, ci 
+* Output: s, co
+.subckt FA a b ci s co
+* write your FA circuitry here
+* BEGIN ANSWER
+
+XAND7 b ci 7 and2
+XAND9 a 7 9 and2
+XINV11 b 11 inv
+XINV13 a 13 inv
+XAND15 13 ci 15 and2
+XAND17 11 15 17 and2
+XOR18 9 17 18 or2
+XINV20 a 20 inv
+XINV23 ci 23 inv
+XAND24 b 23 24 and2
+XAND26 20 24 26 and2
+XINV30 b 30 inv
+XINV31 ci 31 inv
+XAND32 30 31 32 and2
+XAND34 a 32 34 and2
+XOR35 26 34 35 or2
+XOR36 18 35 s or2
+
+XAND104 b ci 102 and2
+XAND108 a ci 108 and2
+XAND112 a b 112 and2
+XOR113 108 112 113 or2
+XOR114 102 113 co or2
+
+*END ANSWER
+.ends
+
+
+.subckt ADDER4 a3 a2 a1 a0 b3 b2 b1 b0 s4 s3 s2 s1 s0
+Xbit0 a0 b0 0 s0 c0 FA
+Xbit1 a1 b1 c0 s1 c1 FA
+Xbit2 a2 b2 c1 s2 c2 FA
+Xbit3 a3 b3 c2 s3 s4 FA
+.ends
+

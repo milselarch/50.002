@@ -1,0 +1,6 @@
+.include "nominal.jsim"
+
+.subckt xor a b z
+.ends
+
+

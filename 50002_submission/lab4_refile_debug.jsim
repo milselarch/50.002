@@ -1,0 +1,139 @@
+* .include "nominal.jsim"
+* .include "stdcell.jsim"
+* .include "lab4_testregfile.jsim"
+
+.subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z WA[4:0]
+
+* Constant XP
+Xxp1 vdd#4 XP[4:1] bus 
+Xxp2 0 XP0 bus
+
+**** RA2SEL mux ************
+* BEGIN ANSWER
+
+XRA2SEL RA2SEL#5 id[15:11] id[25:21] RA2_ADDR[4:0] mux2
+
+* END ANSWER
+****************************
+
+* tie id[20:16] to RA1_ADDR
+XRA1_CONNECT id[20:16] RA1_ADDR[4:0] bus
+
+**** WASEL mux *************
+* BEGIN ANSWER
+
+XWASELINC1 XWASELIN1_BITS[0] 0 bus
+XWASELINC2 XWASELIN1_BITS[4:1] vdd#4 bus
+XWASELMUX WASEL#5 id[25:21] XWASELIN1_BITS[4:0] WA[4:0] mux2
+
+* END ANSWER
+****************************
+
+**** Regfile memory ********
+* BEGIN ANSWER
+Xregfile
++ vdd 0 0 RA1_ADDR[4:0] RD1_PRE[31:0] // RA1 read port, RD1 data
++ vdd 0 0 RA2_ADDR[4:0] RD2_PRE[31:0] // RA2 read port, RD2 data
++ 0 clk werf WA[4:0] WDSEL_OUT[31:0]  // write port
++ $memory width=32 nlocations=31
+
+* END ANSWER
+
+* R31 checker for RD1 
+* BEGIN ANSWER
+******** misunderstood mux filter for RD1
+* XCHECK1 RA1_ADDR[0] RA1_ADDR[1] RA1_ADDR[2] RA1_ADDR[3] _ra1_check4 and4
+* XCHECK2 RA1_ADDR[4] _ra1_check4 ra1_addr_end and2
+* XRD1_OVERRIDE ra1_addr_end#32 RD1_PRE[31:0] 0#32 RD1[31:0] mux2
+********
+
+* END ANSWER
+
+************************************
+* create selector signal s0
+XANDRA1G4 RA1_ADDR[3] RA1_ADDR[3] RA1_ADDR[2] RA1_ADDR[1] ra1_sub_and4 and4
+XANDRA1GF RA1_ADDR[0] ra1_sub_and4 s0 and2
+************************************
+* the diagram might be wrong. After all,
+* why would a single address be used to filter two ports?
+* create selector signal s1
+************************************
+XANDRA2G4 RA2_ADDR[4] RA2_ADDR[3] RA2_ADDR[2] RA2_ADDR[1] ra2_sub_and4 and4
+XANDRA2GF RA2_ADDR[0] ra2_sub_and4 s1 and2
+************************************
+
+* RD1 mux
+* BEGIN ANSWER
+
+XRAMUX1 s0#32 RD1_PRE[31:0] 0#32 rd1_out[31:0] mux2
+XCONNECTRD1 rd1_out[31:0] ra[31:0] bus
+
+* END ANSWER
+
+* R31 checker for RD2 
+* BEGIN ANSWER
+******** misunderstood mux filter for RD2
+* XCHECK3 RA2_ADDR[0] RA2_ADDR[1] RA2_ADDR[2] RA2_ADDR[3] _ra2_check4 and4
+* XCHECK4 RA2_ADDR[4] _ra2_check4 ra2_addr_end and2
+* XRD2_OVERRIDE ra2_addr_end#32 RD2_PRE[31:0] 0#32 RD2[31:0] mux2
+********
+* END ANSWER
+
+* RD2 mux
+* BEGIN ANSWER
+
+XRAMUX2 s1#32 RD2_PRE[31:0] 0#32 rd2_out[31:0] mux2
+XRD2_RELABEL1 rd2_out[31:0] rb[31:0] bus
+XRD2_RELABEL2 rd2_out[31:0] mwd[31:0] bus
+
+* END ANSWER
+****************************
+
+**** Z computation *********
+* BEGIN ANSWER
+
+XOR7 ra31 ra30 7 or2
+XOR10 ra29 ra28 10 or2
+XOR12 7 10 12 or2
+XOR16 ra27 ra26 16 or2
+XOR19 ra25 ra24 19 or2
+XOR21 16 19 21 or2
+XOR23 12 21 23 or2
+XOR28 ra23 ra22 28 or2
+XOR31 ra21 ra20 31 or2
+XOR33 28 31 33 or2
+XOR37 ra19 ra18 37 or2
+XOR40 ra17 ra16 40 or2
+XOR42 37 40 42 or2
+XOR44 33 42 44 or2
+XOR46 23 44 46 or2
+XOR52 ra15 ra14 52 or2
+XOR55 ra13 ra12 55 or2
+XOR57 52 55 57 or2
+XOR61 ra11 ra10 61 or2
+XOR64 ra9 ra8 64 or2
+XOR66 61 64 66 or2
+XOR68 57 66 68 or2
+XOR73 ra7 ra6 73 or2
+XOR76 ra5 ra4 76 or2
+XOR78 73 76 78 or2
+XOR82 ra3 ra2 82 or2
+XOR85 ra1 ra0 85 or2
+XOR87 82 85 87 or2
+XOR89 78 87 89 or2
+XOR91 68 89 91 or2
+XOR92 46 91 ra_or_out or2
+XORINV ra_or_out z inverter
+
+* END ANSWER
+****************************
+
+**** mwd[31:0] output ******
+* BEGIN ANSWER
+
+Xmwdout mwd[31:0] rb[31:0] bus
+
+* END ANSWER
+****************************
+
+.ends
