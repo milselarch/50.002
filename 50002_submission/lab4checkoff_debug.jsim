@@ -423,7 +423,7 @@
 + 23799ns 0x55555555
 
 Xbeta clk reset irq ia[31:0] id[31:0] ma[31:0] moe mrd[31:0] wr mwd[31:0] PCSEL[2:0] PC_4[31:0]
-+ pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_4_SXTC[31:0] BRANCH_CHECK z ra[31:0] WERF WDSEL_OUT[31:0] WA[4:0] beta 
++ pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_4_SXTC[31:0] BRANCH_CHECK z ra[31:0] WERF WDSEL_OUT[31:0] WA[4:0] RD3[31:0] beta 
 
 Xmem
 + vdd 0 0 ia[11:2] id[31:0]
@@ -525,7 +525,8 @@ Virq irq 0 pwl(0ns 0v, 1001ns 0v,
 .plot PC_4_SXTC[31:0]
 .plot BRANCH_CHECK
 * .plot z
-.plot werf
+* .plot werf
+.plot RD3[31:0]
 .plot WDSEL_OUT[31:0]
 .plot WA[4:0]
 .plot ra[31:0]

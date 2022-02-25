@@ -82,7 +82,7 @@ XCONNECTRD1 rd1_out[31:0] ra[31:0] bus
 * RD2 mux
 * BEGIN ANSWER
 
-XRAMUX2 s0#32 RD2_PRE[31:0] 0#32 rd2_out[31:0] mux2
+XRAMUX2 s1#32 RD2_PRE[31:0] 0#32 rd2_out[31:0] mux2
 XRD2_RELABEL1 rd2_out[31:0] rb[31:0] bus
 XRD2_RELABEL2 rd2_out[31:0] mwd[31:0] bus
 

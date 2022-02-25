@@ -51,7 +51,7 @@ Xregfile
 
 ************************************
 * create selector signal s0
-XANDRA1G4 RA1_ADDR[3] RA1_ADDR[3] RA1_ADDR[2] RA1_ADDR[1] ra1_sub_and4 and4
+XANDRA1G4 RA1_ADDR[4] RA1_ADDR[3] RA1_ADDR[2] RA1_ADDR[1] ra1_sub_and4 and4
 XANDRA1GF RA1_ADDR[0] ra1_sub_and4 s0 and2
 ************************************
 * the diagram might be wrong. After all,

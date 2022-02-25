@@ -1,0 +1,14 @@
+.include beta.uasm
+
+init:
+	CMOVE(1, R1)
+
+
+loop:
+	ADDC(R1, 1, R1)
+	BR(potato)
+	ADDC(R1, 5, R1)
+
+potato:
+	ADDC(R1, 2, R1)
+	BR(init)

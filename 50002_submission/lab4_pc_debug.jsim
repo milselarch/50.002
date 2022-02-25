@@ -5,6 +5,7 @@
 
 .subckt PC_UNIT clk reset id[15:0] PCSEL[2:0] ra[31:0] ia[31:0] PC_4_SXTC[31:0] PC_4[31:0] pc_out1[31:0] pc_out2[31:0] reset_signal[31:0]
 
+
 * constant XAddr 0x80000008
 XAddr1 vdd#2 XAddr31 XAddr3 bus
 XAddr2 0#30 XAddr[30:4] XAddr[2:0] bus
@@ -28,6 +29,9 @@ XJMPMUX ia31 0 ra31 jmp_ra31 mux2
 
 * END ANSWER
 ****************************
+
+**** The Magical JT Unit ***
+
 
 **** 5-to-1 PCSEL mux *****
 * BEGIN ANSWER

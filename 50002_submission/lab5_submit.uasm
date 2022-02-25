@@ -1,12 +1,14 @@
 .include beta.uasm
 .include lab5checkoff.uasm
 
+.breakpoint
 
 count_bull_cows: | your subroutine must have this name
 	| standard subroutine entry sequence
 	PUSH(LP)	
 	PUSH(BP)	
 	MOVE(SP,BP)	
+
 	| PUSH all used registers
 	PUSH(R1)		| bulls
 	PUSH(R2)		| cows
@@ -20,6 +22,7 @@ count_bull_cows: | your subroutine must have this name
 	PUSH(R10)		| temp reg
 	PUSH(R11)		| a
 	PUSH(R12)		| b
+
 	LD(BP,-12,R11)		| load the arg value of constant a to R11
 	LD(BP,-16,R12)		| load the arg value of constant b to R12
 	CMOVE(0,R1)		| set initial val of var bulls = 0
@@ -31,12 +34,75 @@ count_bull_cows: | your subroutine must have this name
 	|||| … your code here, leave score (return value) in R0 …
 	|||||||||||||||||||||||||||||||||||||||||||||||
 
+	| R11 -> a
+	| R12 -> b
+
+	CMOVE(0, R1) | cows = R1
+	CMOVE(0, R2) | bulls = R2
+	CMOVE(16, R3) | k [test word index] = 16
+
+| for k in range(12, -1, -4):
+loop_test_word:
+	SUBC(R3, 4, R3) | k -= 4
+	SHR(R12, R3, R4) | R4 -> sb = b >> k
+	ANDC(R4, 0xF, R5) | bd[R5] = sb & 0xF
+	CMPEQC(R5, 0xF, R6) | b_counted[R6] = bd == 0xF
+	BEQ(R6, loop_test_word, R31) | if b_counted[R6]: continue
+
+	CMOVE(0, R6) | R6 -> is_cow
+	CMOVE(0, R7) | R7 -> is_bull
+	CMOVE(16, R4) | i [R4] [secret word index] = 16 
+
+	| for i in range(12, -1, -4):
+	loop_secret_word:
+		SUBC(R4, 4, R4) | i[R4] -= 4
+		SHR(R1, R4, R8) | sa[R8] = a[R1] >> i[R4]
+		ANDC(R8, 0xF, R9) | ad[R9] = sa[R8] & 0xF
+		CMPEQ(R5, R9, R10) | eq[R5] = ad[R9] == bd[R5]
+		
+		CMPEQ(R3, R4, R11) | n_shifted[R11] = k[R3] == i[R4]
+		SUBC(R31, R11, R12) | shifted[R12] = 0[R31] - n_shifted[R11]
+		ADDC(R12, 1, R12) | shifted[R12] = shifted[R12] + 1
+		| -> shifted[R12] = -n_shifted[R11] + 1
+		MUL(R11, R5, R13) | digit_is_bull[R13] = n_shifted[R11] * eq[R5]
+		MUL(R12, R5, R14) | digit_is_cow[R14] = shifted[R12] * eq[R5]
+		OR(R7, R13, R7) | is_bull[R7] = digit_is_bull[R13] | is_bull[R7]
+		OR(R6, R14, R6) | is_cow[R6] = digit_is_cow[R14] | is_cow[R6]
+
+		BNE(R13, loop_secret_word, R31) | if not digit_is_bull: continue
+		
+		CMOVE(0xF, R15) | mask_a[R15] = 0xF
+		SHL(R15, R4, R15) | mask_a[R15] = mask_a[R15] << i[R4]
+		OR(R11, R15, R11) | a[R11] = a[R11] | mask_a[R15]
+
+		BNE(R4, loop_secret_word, R31)
+		| continue inner loop if i[R4] != 0
+
+	| free sa[R8]
+	SUBC(R31, R7, R8) | not_bull[R8] = 0 - is_bull[R7]
+	ADDC(R8, 1, R8) | not_bull[R8] = not_bull[R8] + 1
+	| not_bull[R8] = -is_bull[R7] + 1
+	MUL(R6, R8, R6) | is_cow[R6] = is_cow[R6] * not_bull[R8]
+	ADD(R1, R6, R1) | cows[R1] = cows[R1] + is_cow[R6]
+	ADD(R2, R7, R2) | bulls[R2] = bulls[R2] + is_bull[R7]
+
+	CMPEQC(R3, 0, R30) 
+	BNE(R30, loop_test_word, R31)
+	| continue outer loop if k[R3] != 0
+	|||||||||||||||||||||||||||||||||||||||||||||||
+	| OUTER LOOP END
+	|||||||||||||||||||||||||||||||||||||||||||||||
+
+	| free not_bull[R8], ad[R9]
+	SHLC(R2, 4, R8) | bull_shift[R8] = bulls[R2] << 4
+	ADD(R8, R1, R0) | total[R0] = bull_shift[R8] + cows[R1]
+
 	| … POP saved registers above in reverse order…
 	MOVE(BP,SP)
 	POP(BP)
 	POP(LP)
 	RTN()
-
+	
 
 StackBase: 
 	LONG(.+4)		| Pointer to the bottom of stack

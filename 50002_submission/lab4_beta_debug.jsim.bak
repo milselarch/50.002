@@ -10,7 +10,7 @@
 
 
 .subckt beta clk reset irq ia[31:0] id[31:0] ma[31:0] moe mrd[31:0] wr mwd[31:0] PCSEL[2:0] PC_4[31:0]
-+ pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_4_SXTC[31:0] BRANCH_CHECK z ra[31:0] WERF WDSEL_OUT[31:0]
++ pc_out1[31:0] pc_out2[31:0] reset_signal[31:0] PC_4_SXTC[31:0] BRANCH_CHECK z ra[31:0] WERF WDSEL_OUT[31:0] WA[4:0]
 
 * BEGIN ANSWER
 * initialise pc unit circuit
@@ -20,8 +20,8 @@ XPC_UNIT clk reset id[15:0] PCSEL[2:0] ra[31:0] ia[31:0] PC_4_SXTC[31:0] PC_4[31
 
 * initialise regfile unit circuit
 
-* .subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z
-XREGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z REGFILE_UNIT
+* .subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z 
+XREGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z WA[4:0] RD3[31:0] REGFILE_UNIT
 
 * initialise control unit circuit
 

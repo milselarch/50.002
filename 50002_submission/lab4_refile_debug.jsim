@@ -2,7 +2,8 @@
 * .include "stdcell.jsim"
 * .include "lab4_testregfile.jsim"
 
-.subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z WA[4:0]
+* .subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z
+.subckt REGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] mwd[31:0] z WA[4:0] RD3[31:0]
 
 * Constant XP
 Xxp1 vdd#4 XP[4:1] bus 
@@ -29,14 +30,20 @@ XWASELMUX WASEL#5 id[25:21] XWASELIN1_BITS[4:0] WA[4:0] mux2
 * END ANSWER
 ****************************
 
+**** WRITE ADDRESS DEBUGING ********************
+XFIX_READ_ADDR1 RA3_ADDR[4] 0 bus
+XFIX_READ_ADDR2 RA3_ADDR[3:0] vdd#4 bus
+* XRA3REG WA[4:0] clk#5 RA3_ADDR[4:0] dreg
+************************************************
+
 **** Regfile memory ********
 * BEGIN ANSWER
 Xregfile
 + vdd 0 0 RA1_ADDR[4:0] RD1_PRE[31:0] // RA1 read port, RD1 data
 + vdd 0 0 RA2_ADDR[4:0] RD2_PRE[31:0] // RA2 read port, RD2 data
++ vdd 0 0 RA3_ADDR[4:0] RD3[31:0] // RA3 debug port
 + 0 clk werf WA[4:0] WDSEL_OUT[31:0]  // write port
 + $memory width=32 nlocations=31
-
 * END ANSWER
 
 * R31 checker for RD1 
@@ -51,7 +58,7 @@ Xregfile
 
 ************************************
 * create selector signal s0
-XANDRA1G4 RA1_ADDR[3] RA1_ADDR[3] RA1_ADDR[2] RA1_ADDR[1] ra1_sub_and4 and4
+XANDRA1G4 RA1_ADDR[4] RA1_ADDR[3] RA1_ADDR[2] RA1_ADDR[1] ra1_sub_and4 and4
 XANDRA1GF RA1_ADDR[0] ra1_sub_and4 s0 and2
 ************************************
 * the diagram might be wrong. After all,
@@ -84,7 +91,7 @@ XCONNECTRD1 rd1_out[31:0] ra[31:0] bus
 
 XRAMUX2 s1#32 RD2_PRE[31:0] 0#32 rd2_out[31:0] mux2
 XRD2_RELABEL1 rd2_out[31:0] rb[31:0] bus
-XRD2_RELABEL2 rd2_out[31:0] mwd[31:0] bus
+* XRD2_RELABEL2 rd2_out[31:0] mwd[31:0] bus
 
 * END ANSWER
 ****************************

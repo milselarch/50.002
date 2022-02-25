@@ -1,7 +1,7 @@
 .include "nominal.jsim"
 .include "stdcell.jsim"
-.include "lab4_control_debug.jsim"
-.include "lab4_pc.jsim"
+.include "lab4_control.jsim"
+.include "lab4_pc_debug.jsim"
 .include "lab4_regfile.jsim"
 .include "lab4_aluwdsel.jsim"
 .include "lab4_adder.jsim"
@@ -21,7 +21,7 @@ XREGFILE_UNIT clk wasel ra2sel werf id[25:11] WDSEL_OUT[31:0] ra[31:0] rb[31:0] 
 
 * initialise control unit circuit
 
-XCONTROL_UNIT z reset irq ia31 id[31:26] asel bsel ra2sel alufn[5:0] moe wdsel[1:0] wasel werf wr pcsel[2:0] BRANCH_CHECK CONTROL_UNIT
+XCONTROL_UNIT z reset irq ia31 id[31:26] asel bsel ra2sel alufn[5:0] moe wdsel[1:0] wasel werf wr pcsel[2:0] CONTROL_UNIT
 
 * initialise alu+wdsel unit circuit
 
